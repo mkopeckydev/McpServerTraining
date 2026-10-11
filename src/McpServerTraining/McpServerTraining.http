@@ -1,0 +1,26 @@
+@McpServerTraining_HostAddress = http://localhost:5170
+
+GET {{McpServerTraining_HostAddress}}/
+Accept: application/json
+
+###
+
+GET {{McpServerTraining_HostAddress}}/status/
+Accept: application/json
+
+###
+
+GET {{McpServerTraining_HostAddress}}/mcplist
+Accept: application/json
+
+###
+
+GET {{McpServerTraining_HostAddress}}/mcptest
+Accept: text/plain
+
+###
+
+GET {{McpServerTraining_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
