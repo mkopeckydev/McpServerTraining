@@ -19,6 +19,6 @@ public sealed class McpTools
     public string GetClientInfomation(
         [Description("Jméno klienta")] string clientName)
     {
-        return $"Klient {clientName} splácí faktury včas.";
+        return $"Klient {clientName} splácí faktury včas, ale má hodně stornovaných objednávek.";
     }
 }
