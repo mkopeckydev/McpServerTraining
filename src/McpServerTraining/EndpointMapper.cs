@@ -1,5 +1,4 @@
-using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
+using McpServerTraining.Mcp;
 
 namespace McpServerTraining;
 
@@ -25,60 +24,13 @@ public static class EndpointMapper
         .WithDescription("Vrací aktuální stav serveru MCP a místní čas serveru.")
         .WithTags("Služba");
 
-        app.MapGet("/mcplist", async (HttpContext context, CancellationToken cancellationToken) =>
-        {
-            var mcpEndpoint = new Uri($"{context.Request.Scheme}://{context.Request.Host}/mcp");
-            var transport = new HttpClientTransport(new HttpClientTransportOptions
-            {
-                Endpoint = mcpEndpoint
-            });
-
-            await using var mcpClient = await McpClient.CreateAsync(transport, cancellationToken: cancellationToken);
-            var tools = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
-
-            return string.Join(Environment.NewLine, tools.Select(tool => $"{tool.Name}: {tool.Description}"));
-        })
+        app.MapGet("/mcplist", McpTest.GetMcpTools)
         .WithName("GetMcpTools")
         .WithSummary("Výpis nástrojů MCP.")
         .WithDescription("Vrací seznam nástrojů dostupných na MCP endpointu /mcp.")
         .WithTags("MCP");
 
-        app.MapGet("/mcptest", async (HttpContext context, CancellationToken cancellationToken) =>
-        {
-            var mcpEndpoint = new Uri($"{context.Request.Scheme}://{context.Request.Host}/mcp");
-            var transport = new HttpClientTransport(new HttpClientTransportOptions
-            {
-                Endpoint = mcpEndpoint
-            });
-
-            await using var mcpClient = await McpClient.CreateAsync(transport, cancellationToken: cancellationToken);
-
-            var secretResult = await mcpClient.CallToolAsync(
-                "get_secret_infomation",
-                new Dictionary<string, object?>
-                {
-                    ["value"] = 33
-                },
-                cancellationToken: cancellationToken);
-
-            var secretText = "get_secret_infomation: " + string.Join(Environment.NewLine, secretResult.Content
-                .OfType<TextContentBlock>()
-                .Select(content => content.Text));
-
-            var clientResult = await mcpClient.CallToolAsync(
-                "get_client_infomation",
-                new Dictionary<string, object?>
-                {
-                    ["clientName"] = "Valašská firma"
-                },
-                cancellationToken: cancellationToken);
-
-            var clientText = "get_secret_infomation: " + string.Join(Environment.NewLine, clientResult.Content
-                .OfType<TextContentBlock>()
-                .Select(content => content.Text));
-
-            return string.Join(Environment.NewLine, secretText, clientText);
-        })
+        app.MapGet("/mcptest", McpTest.TestMcpTools)
         .WithName("TestMcpTools")
         .WithSummary("Test nástrojů MCP.")
         .WithDescription("Postupně volá všechny nástroje MCP s testovacími vstupními hodnotami.")

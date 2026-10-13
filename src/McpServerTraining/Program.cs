@@ -9,6 +9,13 @@ var projectVersion = System.Reflection.Assembly.GetExecutingAssembly()
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+    .AddAuthentication("Token")
+    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, TokenAuthenticationHandler>(
+        "Token",
+        options => { });
+builder.Services.AddAuthorization();
+
+builder.Services
     .AddMcpServer()
     .WithHttpTransport()
     .WithTools<McpTools>();
@@ -40,7 +47,8 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.MapMcp("/mcp");
+app.MapMcp("/mcp")
+    .RequireAuthorization();
 
 EndpointMapper.MapEndpoints(app);
 
